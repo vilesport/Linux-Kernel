@@ -1,1 +1,4 @@
-I'm on my way to build a Linux Kernel
+- Change the version of Busybox and Linux kernel in build.sh
+- I already setup everything for building and run Busybox on Linux kernel
+  - First, run build.sh to build both Linux kernel and Busybox
+  - Then, run.sh will launch the machine
