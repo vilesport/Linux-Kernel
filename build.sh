@@ -12,7 +12,7 @@ then
         wget cdn.kernel.org/pub/linux/kernel/v6.x/$DIR1.tar.xz
     fi
     echo "Extracting $DIR1.tar.xz" ;
-    tar -xf $DIR.tar.xz
+    tar -xf $DIR1.tar.xz
 fi
 
 if [ ! -d "$DIR2" ]
