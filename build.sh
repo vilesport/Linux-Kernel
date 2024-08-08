@@ -20,7 +20,7 @@ then
     if [ ! -e "$DIR2.tar.bz2" ]
     then
         echo "$DIR2.tar.bz2 not found"
-        echo "Downloading $DIR1.tar.xz"
+        echo "Downloading $DIR2.tar.xz"
         wget busybox.net/downloads/$DIR2.tar.bz2
     fi
     echo "Extracting $DIR2.tar.bz2" ;
