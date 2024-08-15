@@ -1,5 +1,97 @@
 #!/bin/sh
-qemu-system-x86_64 -kernel ./files/bzImage \
-  -initrd ./files/initramfs.cpio.gz -nographic \
-  -append "console=ttyS0"
+DIR1="linux-6.10.2"
+DIR2="busybox-1.36.1"
+DRV="hehe"
 
+kernel() {
+    if [ ! -d "$DIR1" ]
+    then
+        if [ ! -e "$DIR1.tar.xz" ]
+        then
+            echo "$DIR1.tar.xz not found"
+            echo "Downloading $DIR1.tar.xz"
+            wget cdn.kernel.org/pub/linux/kernel/v6.x/$DIR1.tar.xz
+        fi
+        echo "Extracting $DIR1.tar.xz" ;
+        tar -xf $DIR1.tar.xz
+    fi
+    mkdir -p ./$DIR1/Final ;
+    cp ./.config_linux ./$DIR1/.config ;
+    make --directory=./$DIR1 -j 6 oldconfig ;
+    make --directory=./$DIR1 -j 6 ;
+    cp ./$DIR1/arch/x86/boot/bzImage ./files/bzImage ;
+}
+
+busybox() {
+    if [ ! -d "$DIR2" ]
+    then
+        if [ ! -e "$DIR2.tar.bz2" ]
+        then
+            echo "$DIR2.tar.bz2 not found"
+            echo "Downloading $DIR2.tar.xz"
+            wget busybox.net/downloads/$DIR2.tar.bz2
+        fi
+        echo "Extracting $DIR2.tar.bz2" ;
+        tar -xf $DIR2.tar.bz2
+    fi
+    mkdir -p ./$DIR2/Final ;
+    cp ./.config_busybox ./$DIR2/Final/.config ;
+    make --directory=./$DIR2 -j 6 O=./Final/ oldconfig ;
+    make --directory=./$DIR2 -j 6 O=./Final/ ;
+    make --directory=./$DIR2 -j 6 O=./Final/ install ;
+    for dir in bin sbin etc proc sys usr/bin usr/sbin drivers; do mkdir -p ./files/_install/$dir; done ;
+    cp -r ./$DIR2/Final/_install ./files/ ;
+    cp ./.init ./files/_install/init ;
+    chmod +x ./files/_install/init ;
+}
+
+compile() {
+    cp ./.makedrivers ./drivers/Makefile ;
+    make --directory=./drivers all DRV=$DRV VER=$DIR1 ;
+    cp ./drivers/$DRV.ko ./files/_install/drivers/ ; 
+    cd ./files/_install/ ;
+    find . -print0 | cpio --null -ov --format=newc | gzip -9 > ./../initramfs.cpio.gz ;
+    cd ./../.. ;
+}
+
+run() {
+    qemu-system-x86_64 -kernel ./files/bzImage \
+    -initrd ./files/initramfs.cpio.gz -nographic \
+    -append "console=ttyS0"
+}
+
+_end() {
+    echo "Done!" ;
+    exit 0
+}
+
+help() {
+    cat README.md ;
+    exit 0
+}
+
+if [ $# -eq 0 ]
+then
+    mkdir ./files ;
+    kernel ; 
+    busybox ;
+    compile ;
+    _end
+fi
+
+if [ "$1" = "kernel" ]; then
+    kernel ;
+fi
+if [ "$1" = "busybox" ]; then
+    busybox ;
+fi
+if [ "$1" = "compile" ]; then
+    compile ;
+fi
+if [ "$1" = "run" ]; then
+    run ;
+fi
+if [ "$1" = "help" ]; then
+    help
+fi
+_end

@@ -1,4 +1,9 @@
-- Change the version of Busybox and Linux kernel in build.sh
-- I already setup everything for building and run Busybox on Linux kernel
-  - First, run build.sh to build both Linux kernel and Busybox
-  - Then, run.sh will launch the machine
+- I have update more features so that it easier for debugging
+- You can change your `linux kernel` version, `busybox` version and your driver name at the top of `run.sh`
+- `run.sh` would help you for doing anything:
+  - With no argument, it will build `linux kernel`, `busybox` and `compile` your driver in `drivers` folder
+  - `kernel`: build `linux kernel` only and copy `bzImage` to `files`
+  - `busybox`: build `busybox` only, copy and setup everything for `initramfs`
+  - `compile`: compile your driver in `drivers`
+  - `run`: run the machine, make sure that `kernel`, `busybox` and `compile` have to run at least 1 time before run
+  - `help`: display this help
