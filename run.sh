@@ -47,9 +47,7 @@ busybox() {
 
 compile() {
     cp ./.makedrivers ./drivers/Makefile ;
-    cd ./drivers ;
-    make all DRV=$DRV VER=$DIR1 ;
-    cd ./.. ;
+    make --directory=./drivers all DRV=$DRV VER=$DIR1 ;
     cp ./drivers/$DRV.ko ./files/_install/drivers/ ; 
     cd ./files/_install/ ;
     find . -print0 | cpio --null -ov --format=newc | gzip -9 > ./../initramfs.cpio.gz ;
