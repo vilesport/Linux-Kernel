@@ -19,7 +19,7 @@ kernel() {
     cp ./.config_linux ./$DIR1/.config ;
     make --directory=./$DIR1 -j 6 oldconfig ;
     make --directory=./$DIR1 -j 6 ;
-    cp ./$DIR1/arch/x86/boot/bzImage ./files/bzImage ;
+    cp ./$DIR1/arch/x86/boot/bzImage ./files/bzImage
 }
 
 busybox() {
@@ -42,16 +42,17 @@ busybox() {
     for dir in bin sbin etc proc sys usr/bin usr/sbin drivers; do mkdir -p ./files/_install/$dir; done ;
     cp -r ./$DIR2/Final/_install ./files/ ;
     cp ./.init ./files/_install/init ;
-    chmod +x ./files/_install/init ;
+    chmod +x ./files/_install/init
 }
 
 compile() {
     cp ./.makedrivers ./drivers/Makefile ;
     make --directory=./drivers all DRV=$DRV VER=$DIR1 ;
     cp ./drivers/$DRV.ko ./files/_install/drivers/ ; 
+    make --directory=./drivers clean DRV=$DRV VER=$DIR1 ;
     cd ./files/_install/ ;
     find . -print0 | cpio --null -ov --format=newc | gzip -9 > ./../initramfs.cpio.gz ;
-    cd ./../.. ;
+    cd ./../..
 }
 
 run() {
@@ -66,32 +67,37 @@ _end() {
 }
 
 help() {
-    cat README.md ;
-    exit 0
+    cat README.md
 }
 
-if [ $# -eq 0 ]
+if [ $# -eq 0]
+then
+   run ;
+   _end
+fi
+
+if [ "$1" = "build" ]
 then
     mkdir ./files ;
     kernel ; 
     busybox ;
-    compile ;
-    _end
+    compile
 fi
 
 if [ "$1" = "kernel" ]; then
-    kernel ;
+    kernel
 fi
+
 if [ "$1" = "busybox" ]; then
-    busybox ;
+    busybox
 fi
+
 if [ "$1" = "compile" ]; then
-    compile ;
+    compile
 fi
-if [ "$1" = "run" ]; then
-    run ;
-fi
+
 if [ "$1" = "help" ]; then
     help
 fi
+
 _end
