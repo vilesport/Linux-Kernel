@@ -70,7 +70,7 @@ help() {
     cat README.md
 }
 
-if [ $# -eq 0]
+if [ $# -eq 0 ]
 then
    run ;
    _end
