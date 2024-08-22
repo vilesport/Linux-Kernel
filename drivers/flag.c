@@ -22,7 +22,13 @@ static ssize_t
 flag_read(struct file *filp, char __user *buffer, size_t len, loff_t *off) {
     printk(KERN_ALERT "reading...");
     int ret = copy_to_user(buffer, flag, len);
-    return ret;
+    if(ret == len)
+    {
+        printk(KERN_ALERT "Error");
+        return -EFAULT;
+    }
+    printk(KERN_ALERT "sucess");
+    return len-ret;
 }
 
 static ssize_t 
@@ -34,8 +40,13 @@ flag_write(struct file *filp, const char __user *buffer, size_t count, loff_t *p
     }
     printk(KERN_ALERT "writing...");
     int ret = copy_from_user(flag, buffer, count);
-    printk(KERN_ALERT "Done");
-    return ret;
+    if(ret == count)
+    {
+        printk(KERN_ALERT "Error");
+        return -EFAULT;
+    }
+    printk(KERN_ALERT "sucess");
+    return count-ret;
 }
 
 static struct file_operations fops = {

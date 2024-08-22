@@ -16,7 +16,6 @@ kernel() {
         echo "Extracting $DIR1.tar.xz" ;
         tar -xf $DIR1.tar.xz
     fi
-    mkdir -p ./$DIR1/Final ;
     cp ./.config_linux ./$DIR1/.config ;
     make --directory=./$DIR1 -j 6 oldconfig ;
     make --directory=./$DIR1 -j 6 ;
