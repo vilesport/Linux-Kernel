@@ -1,7 +1,8 @@
 #!/bin/sh
 DIR1="linux-6.10.2"
 DIR2="busybox-1.36.1"
-DRV="hehe"
+DRV="flag"
+ELF="flag_inter"
 
 kernel() {
     if [ ! -d "$DIR1" ]
@@ -41,15 +42,17 @@ busybox() {
     make --directory=./$DIR2 -j 6 O=./Final/ install ;
     for dir in bin sbin etc proc sys usr/bin usr/sbin drivers; do mkdir -p ./files/_install/$dir; done ;
     cp -r ./$DIR2/Final/_install ./files/ ;
-    cp ./.init ./files/_install/init ;
-    chmod +x ./files/_install/init
 }
 
 compile() {
+    cp ./.init ./files/_install/init ;
+    chmod +x ./files/_install/init
     cp ./.makedrivers ./drivers/Makefile ;
-    make --directory=./drivers all DRV=$DRV VER=$DIR1 ;
-    cp ./drivers/$DRV.ko ./files/_install/drivers/ ; 
-    make --directory=./drivers clean DRV=$DRV VER=$DIR1 ;
+    make --directory=./drivers all DRV=$DRV VER=$DIR1 ELF=$ELF;
+    cp ./drivers/$DRV.ko ./files/_install/drivers/ ;
+    chmod +x ./drivers/$ELF ;
+    cp ./drivers/$ELF ./files/_install/ ;
+    make --directory=./drivers clean DRV=$DRV VER=$DIR1 ELF=$ELF;
     cd ./files/_install/ ;
     find . -print0 | cpio --null -ov --format=newc | gzip -9 > ./../initramfs.cpio.gz ;
     cd ./../..
