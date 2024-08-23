@@ -51,7 +51,6 @@ compile() {
     cp ./drivers/$DRV.ko ./files/_install/drivers/ ;
     chmod +x ./drivers/$ELF ;
     cp ./drivers/$ELF ./files/_install/ ;
-    make --directory=./drivers clean DRV=$DRV VER=$DIR1 ELF=$ELF;
     cd ./files/_install/ ;
     find . -print0 | cpio --null -ov --format=newc | gzip -9 > ./../initramfs.cpio.gz ;
     cd ./../..
@@ -61,6 +60,20 @@ run() {
     qemu-system-x86_64 -kernel ./files/bzImage \
     -initrd ./files/initramfs.cpio.gz -nographic \
     -append "console=ttyS0"
+}
+
+debug() {
+    qemu-system-x86_64 -S -s -kernel ./files/bzImage \
+    -initrd ./files/initramfs.cpio.gz -nographic \
+    -append "console=ttyS0 nokaslr"
+}
+
+_gdb() {
+    gdb -ix cmd
+}
+
+clean() {
+    make --directory=./drivers clean DRV=$DRV VER=$DIR1 ELF=$ELF;
 }
 
 _end() {
@@ -96,6 +109,18 @@ fi
 
 if [ "$1" = "compile" ]; then
     compile
+fi
+
+if [ "$1" = "debug" ]; then
+    debug
+fi
+
+if [ "$1" = "clean" ]; then
+    clean
+fi
+
+if [ "$1" = "gdb" ]; then
+    _gdb
 fi
 
 if [ "$1" = "help" ]; then

@@ -1,0 +1,1 @@
+savedcmd_/home/viles/task/Kernel/Linux-Kernel/drivers/flag.ko := ld -r -m elf_x86_64 -z noexecstack --build-id=sha1  -T scripts/module.lds -o /home/viles/task/Kernel/Linux-Kernel/drivers/flag.ko /home/viles/task/Kernel/Linux-Kernel/drivers/flag.o /home/viles/task/Kernel/Linux-Kernel/drivers/flag.mod.o

@@ -20,6 +20,11 @@ static struct device* my_device = NULL;
 
 static ssize_t 
 flag_read(struct file *filp, char __user *buffer, size_t len, loff_t *off) {
+    if(len > 23)
+    {
+        printk(KERN_ALERT "Too much");
+        return -EFAULT;
+    }
     printk(KERN_ALERT "reading...");
     int ret = copy_to_user(buffer, flag, len);
     if(ret == len)
