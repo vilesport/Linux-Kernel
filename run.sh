@@ -48,7 +48,7 @@ compile() {
     chmod +x ./files/_install/init
     cp ./.makedrivers ./drivers/Makefile ;
     make --directory=./drivers all DRV=$DRV VER=$DIR1 ELF=$ELF;
-    cp ./drivers/$DRV.ko ./files/_install/drivers/ ;
+    cp ./drivers/*.ko ./files/_install/drivers/ ;
     chmod +x ./drivers/$ELF ;
     cp ./drivers/$ELF ./files/_install/ ;
     cd ./files/_install/ ;
@@ -58,18 +58,19 @@ compile() {
 
 run() {
     qemu-system-x86_64 -kernel ./files/bzImage \
-    -initrd ./files/initramfs.cpio.gz -nographic \
-    -append "console=ttyS0"
+    -initrd ./files/initramfs.cpio.gz \
+    -append "console=ttyS0 kaslr quiet"
 }
 
 debug() {
     qemu-system-x86_64 -S -s -kernel ./files/bzImage \
-    -initrd ./files/initramfs.cpio.gz -nographic \
-    -append "console=ttyS0 nokaslr"
+    -initrd ./files/initramfs.cpio.gz \
+    -append "console=ttyS0 kaslr quiet" \
+    -no-reboot
 }
 
 _gdb() {
-    gdb -ix cmd
+    gdb-multiarch -ex "target remote localhost:1234" -ex "add-symbol-file ./linux-6.10.2/vmlinux"
 }
 
 clean() {
